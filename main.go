@@ -69,6 +69,8 @@ func runChecks() []CheckResult {
 		{"Cron Jobs", "crontab -l", "No cron jobs found for the current user."},
 		{"TLS Support", "openssl ciphers -v | grep -q 'TLSv1.2\\|TLSv1.3'", "TLSv1.2 or TLSv1.3 support is missing."},
 		{"Password Policy", "grep -q 'minlen' /etc/security/pwquality.conf", "Password policy not enforced. Check pwquality.conf."},
+		{"Disk Encryption", "lsblk -o NAME,TYPE,SIZE,MOUNTPOINT,UUID,ENCRYPTION | grep -i crypt", "Disk encryption not enabled."},
+		{"Unnecessary Services", "systemctl list-units --type=service --state=running | grep -i 'unwanted-service'", "Unnecessary services are running."},
 	}
 
 	for _, check := range checks {
