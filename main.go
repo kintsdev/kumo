@@ -59,11 +59,12 @@ func runChecks() []CheckResult {
 		Cmd     string
 		ErrHint string
 	}{
-		{"System Update", "sudo apt update -y 2>/dev/null | grep -v 'WARNING'", "Failed to fetch updates. Ensure apt is installed and configured."},
+		{"System Update", "sudo apt update -y 2>/dev/null ", "Failed to fetch updates. Ensure apt is installed and configured."},
+		{"System Updateable", "sudo apt list --upgradable 2>/dev/null", "Failed to check for upgradable packages."},
 		{"Kernel Check", "uname -r", "Kernel information not available."},
 		{"UFW Firewall Status", "sudo ufw status | grep -q active", "UFW firewall is inactive or not installed."},
 		{"SSH Security", "grep -q 'PermitRootLogin no' /etc/ssh/sshd_config", "Root login over SSH is permitted. Update sshd_config."},
-		{"Disk Usage", "df -h", "Disk usage information could not be retrieved."},
+		{"Disk Usage", "df -h > /dev/null", "Disk usage information could not be retrieved."},
 		{"Memory Usage", "free -m", "Memory usage data is unavailable."},
 		{"Service Status (rsyslog)", "systemctl is-active --quiet rsyslog", "rsyslog service is not active."},
 		{"Cron Jobs", "crontab -l", "No cron jobs found for the current user."},
