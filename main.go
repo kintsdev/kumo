@@ -73,7 +73,7 @@ func runChecks(configFile string) []CheckResult {
 			start := time.Now()
 			status, msg := runCommand(cmd)
 			if status == "Failed" {
-				msg = errHint + " (" + msg + ")"
+				msg = fmt.Sprintf("%s (Command: %s, Error: %s)", errHint, cmd, msg)
 			}
 			elapsed := time.Since(start)
 
@@ -94,7 +94,7 @@ func runChecks(configFile string) []CheckResult {
 func runCommand(cmd string) (string, string) {
 	out, err := exec.Command("bash", "-c", cmd).CombinedOutput()
 	if err != nil {
-		return "Failed", strings.TrimSpace(string(out))
+		return "Failed", fmt.Sprintf("Command: %s, Output: %s, Error: %v", cmd, strings.TrimSpace(string(out)), err)
 	}
 	return "Passed", strings.TrimSpace(string(out))
 }
