@@ -18,5 +18,60 @@
         "Name": "Check Running Processes",
         "Cmd": "ps aux",
         "ErrHint": "Ensure there are no unauthorized processes running."
+    },
+    {
+        "Name": "Check Firewall Status",
+        "Cmd": "ufw status",
+        "ErrHint": "Ensure the firewall is active and configured correctly."
+    },
+    {
+        "Name": "Check Open Ports",
+        "Cmd": "netstat -tuln",
+        "ErrHint": "Ensure only necessary ports are open."
+    },
+    {
+        "Name": "Check User Accounts",
+        "Cmd": "cat /etc/passwd",
+        "ErrHint": "Ensure there are no unauthorized user accounts."
+    },
+    {
+        "Name": "Check SSH Configuration",
+        "Cmd": "cat /etc/ssh/sshd_config",
+        "ErrHint": "Ensure SSH is configured securely."
+    },
+    {
+        "Name": "Check Installed Packages",
+        "Cmd": "dpkg -l",
+        "ErrHint": "Ensure only necessary packages are installed."
+    },
+    {
+        "Name": "Check System Logs",
+        "Cmd": "tail /var/log/syslog",
+        "ErrHint": "Review system logs for any unusual activity."
+    },
+    {
+        "Name": "Check Network Configuration",
+        "Cmd": "ifconfig",
+        "ErrHint": "Ensure network interfaces are configured correctly."
+    },
+    {
+        "Name": "Check System Uptime",
+        "Cmd": "uptime",
+        "ErrHint": "Ensure the system has been running without unexpected reboots."
+    },
+    {
+        "Name": "Check Disk Usage",
+        "Cmd": "du -sh /",
+        "ErrHint": "Ensure disk usage is within acceptable limits."
+    },
+    {
+        "Name": "Check Kernel Version",
+        "Cmd": "uname -r",
+        "ErrHint": "Ensure the system is running a supported kernel version."
+    },
+    {
+        "Name": "Check System Updates",
+        "Cmd": "apt-get update",
+        "ErrHint": "Ensure the system has the latest updates installed."
     }
 ]
