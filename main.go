@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -28,6 +29,12 @@ type CheckResult struct {
 	Message string `json:"message"`
 }
 
+type Check struct {
+	Name    string `json:"name"`
+	Cmd     string `json:"cmd"`
+	ErrHint string `json:"errHint"`
+}
+
 type model struct {
 	results  []CheckResult
 	quitting bool
@@ -49,29 +56,14 @@ var (
 // Spinner animation frames
 var spinnerFrames = []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
 
-func runChecks() []CheckResult {
+func runChecks(configFile string) []CheckResult {
 	var wg sync.WaitGroup
 	results := make([]CheckResult, 0)
 	mutex := &sync.Mutex{}
 
-	checks := []struct {
-		Name    string
-		Cmd     string
-		ErrHint string
-	}{
-		{"System Update", "sudo apt update -y 2>/dev/null ", "Failed to fetch updates. Ensure apt is installed and configured."},
-		{"System Updateable", "sudo apt list --upgradable 2>/dev/null", "Failed to check for upgradable packages."},
-		{"Kernel Check", "uname -r", "Kernel information not available."},
-		{"UFW Firewall Status", "sudo ufw status | grep -q active", "UFW firewall is inactive or not installed."},
-		{"SSH Security", "grep -q 'PermitRootLogin no' /etc/ssh/sshd_config", "Root login over SSH is permitted. Update sshd_config."},
-		{"Disk Usage", "df -h > /dev/null", "Disk usage information could not be retrieved."},
-		{"Memory Usage", "free -m", "Memory usage data is unavailable."},
-		{"Service Status (rsyslog)", "systemctl is-active --quiet rsyslog", "rsyslog service is not active."},
-		{"Cron Jobs", "crontab -l", "No cron jobs found for the current user."},
-		{"TLS Support", "openssl ciphers -v | grep -q 'TLSv1.2\\|TLSv1.3'", "TLSv1.2 or TLSv1.3 support is missing."},
-		{"Password Policy", "grep -q 'minlen' /etc/security/pwquality.conf", "Password policy not enforced. Check pwquality.conf."},
-		{"Disk Encryption", "lsblk -o NAME,TYPE,SIZE,MOUNTPOINT,UUID,ENCRYPTION | grep -i crypt", "Disk encryption not enabled."},
-		{"Unnecessary Services", "systemctl list-units --type=service --state=running | grep -i 'unwanted-service'", "Unnecessary services are running."},
+	checks, err := loadChecks(configFile)
+	if err != nil {
+		log.Fatalf("Error loading checks: %v", err)
 	}
 
 	for _, check := range checks {
@@ -107,13 +99,28 @@ func runCommand(cmd string) (string, string) {
 	return "Passed", strings.TrimSpace(string(out))
 }
 
+func loadChecks(configFile string) ([]Check, error) {
+	file, err := ioutil.ReadFile(configFile)
+	if err != nil {
+		return nil, err
+	}
+
+	var checks []Check
+	err = json.Unmarshal(file, &checks)
+	if err != nil {
+		return nil, err
+	}
+
+	return checks, nil
+}
+
 type checkResultsMsg []CheckResult
 
 type quitMsg struct{}
 
 func (m model) Init() tea.Cmd {
 	return func() tea.Msg {
-		return checkResultsMsg(runChecks())
+		return checkResultsMsg(runChecks("config.json"))
 	}
 }
 

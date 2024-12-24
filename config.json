@@ -1,0 +1,22 @@
+[
+    {
+        "Name": "Check Disk Space",
+        "Cmd": "df -h",
+        "ErrHint": "Ensure there is enough disk space available."
+    },
+    {
+        "Name": "Check Memory Usage",
+        "Cmd": "free -m",
+        "ErrHint": "Ensure there is enough free memory available."
+    },
+    {
+        "Name": "Check CPU Load",
+        "Cmd": "uptime",
+        "ErrHint": "Ensure the CPU load is within acceptable limits."
+    },
+    {
+        "Name": "Check Running Processes",
+        "Cmd": "ps aux",
+        "ErrHint": "Ensure there are no unauthorized processes running."
+    }
+]
